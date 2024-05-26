@@ -6,7 +6,7 @@ import {
   Pressable,
   Image,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Camera,
   Templates,
@@ -14,10 +14,14 @@ import {
   useCameraFormat,
   useCameraPermission,
 } from 'react-native-vision-camera';
-import {useIsFocused} from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
+
+// firebase
+import { utils } from '@react-native-firebase/app';
+import storage from '@react-native-firebase/storage';
 
 const CameraScreen = () => {
-  const {hasPermission, requestPermission} = useCameraPermission();
+  const { hasPermission, requestPermission } = useCameraPermission();
   const [newPhoto, setNewPhoto] = useState(null);
   const isFocused = useIsFocused();
   const isActive = isFocused;
@@ -40,15 +44,51 @@ const CameraScreen = () => {
   };
 
   const uploadPhoto = async () => {
-    const result = await fetch(`file://${newPhoto.path}`);
-    const data = await result.blob();
-    console.log(data);
+    console.log('upload clicked')
+    try {
+      console.log('inside try')
+      const result = await fetch(`file://${newPhoto.path}`);
+      const data = await result.blob();
+
+      console.log('blob data', data);
+
+      // Generate a unique file name for the image
+      const imageName = `${Date.now()}_photo.jpg`;
+
+      // Create a reference to the Firebase Storage bucket
+      const reference = storage().ref(`images/${imageName}`);
+
+      console.log('reference', reference);
+
+      const uploadTask = reference.put(data);
+
+      // Attach an observer to monitor the upload progress
+      uploadTask.on('state_changed',
+        snapshot => {
+          // Handle progress
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${progress}% complete`);
+        },
+        error => {
+          // Handle errors
+          console.error('Error uploading image:', error);
+        },
+        () => {
+          // Handle successful completion
+          console.log('Image uploaded successfully');
+        }
+      );
+    } catch (error) {
+      console.log('Error');
+      console.error('Error uploading image:', error);
+    }
+
   };
 
   const camera = useRef(null);
   const device = useCameraDevice('back', [
-    {videoResolution: 'max'},
-    {photoResolution: 'max'},
+    { videoResolution: 'max' },
+    { photoResolution: 'max' },
   ]);
 
   const format = useCameraFormat(device, Templates.Snapchat);
@@ -71,7 +111,7 @@ const CameraScreen = () => {
       {newPhoto ? (
         <>
           <Image
-            source={{uri: `file://${newPhoto.path}`}}
+            source={{ uri: `file://${newPhoto.path}` }}
             style={StyleSheet.absoluteFill}
           />
           <View className="absolute bottom-14 flex flex-row gap-3 justify-around w-full">
@@ -101,7 +141,7 @@ const CameraScreen = () => {
             isActive={isActive}
             photo={true}
             ref={camera}
-            // {...cameraProps}
+          // {...cameraProps}
           />
           <Pressable
             onPress={() => TakeAphoto()}

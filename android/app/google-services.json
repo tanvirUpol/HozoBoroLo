@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1032121091911",
+    "project_id": "opsapps-images",
+    "storage_bucket": "opsapps-images.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032121091911:android:a812e3956d0f265f996e62",
+        "android_client_info": {
+          "package_name": "com.hozoborolo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBcz7fAyWKl3zqSDmAEk_xi2wv8JF9QMg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

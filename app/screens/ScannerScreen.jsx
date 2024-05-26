@@ -1,10 +1,4 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    ActivityIndicator,
-
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
     Camera,
@@ -24,10 +18,20 @@ const ScannerScreen = () => {
 
     const codeScanner = useCodeScanner({
         codeTypes: ['qr', 'ean-13', 'code-128'],
-        onCodeScanned: codes => {
-            console.log(`Scanned ${codes.length} codes!`);
-            console.log(codes[0].value);
-            setNewCode(codes[0].value);
+        onCodeScanned: (codes, frame) => {
+            // console.log(codes[0]);
+            // console.log('Top corner', codes[0].frame[3]);
+            // console.log('bottom corner', codes[0].frame[1]);
+
+            console.log(codes[0]);
+
+            console.log();
+
+            if ((codes[0].frame.x >= 440)) {
+                console.log(codes[0].value);
+                setNewCode(codes[0].value);
+            }
+            // console.log(`Scanned ${codes.length} codes!`);
         },
     });
 
@@ -36,10 +40,6 @@ const ScannerScreen = () => {
             requestPermission();
         }
     }, [hasPermission, requestPermission]);
-
-
-
-
 
     const device = useCameraDevice('back', [
         { videoResolution: 'max' },
@@ -62,10 +62,8 @@ const ScannerScreen = () => {
     }
 
     return (
-
         // </View>
         <View className="flex-1 items-center justify-center">
-
             <>
                 <Camera
                     style={StyleSheet.absoluteFill}
@@ -74,15 +72,13 @@ const ScannerScreen = () => {
                     fps={fps}
                     isActive={isActive}
                     codeScanner={codeScanner}
-
                 />
-                {newCode && <Text
-                    className="absolute top-14 bg-white px-3 py-2 text-black rounded-md font-medium text-lg"
-                >{newCode}</Text>}
+                {newCode && (
+                    <Text className="absolute top-14 bg-white px-3 py-2 text-black rounded-md font-medium text-lg">
+                        {newCode}
+                    </Text>
+                )}
             </>
-
-
-
         </View>
     );
 };
